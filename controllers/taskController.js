@@ -50,5 +50,57 @@ export const createTask = (req,res)=>{
     })
 
 };
-export const updateTaskById = (req,res)=>{};
-export const deleteTaskById = (req,res)=>{};
+export const updateTaskById = (req,res)=>{
+    // Get the id
+    const id = req.params.id;
+    // Getting the values of title and completed from req.body  ....> Do more research of req.params and req.body
+    const {
+        title,
+        completed = false
+    } = req.body;
+    // Get the task from tasks.txt and find the task that is matching with the id
+    fs.readFile('data/tasks.txt','utf-8',(err,data)=>{
+        if(err){
+            return res.status(500).send('Error getting the data');
+        }
+        const tasks = JSON.parse(data || '[]');
+        const taskIndex= tasks.findIndex(task => task.id === Number(id));
+        if(taskIndex === -1){
+            return res.status(404).send('No task found with id: ',id);
+        }
+        if(title !== undefined || completed !== undefined){
+            tasks[taskIndex].title = title;
+            tasks[taskIndex].completed = completed;
+        }
+        console.log('The Updated tasks list is : ',tasks);
+        fs.writeFile('data/tasks.txt',JSON.stringify(tasks,null,2),(err)=>{
+            if(err){
+                res.status(500).send('Error in updating the tasks');
+            }
+            res.status(201).json(tasks);
+        })
+    })
+};
+export const deleteTaskById = (req,res)=>{
+    // Get the id
+    const id = req.params.id;
+    // Get the task from tasks.txt and find the task that is matching with the id
+    fs.readFile('data/tasks.txt','utf-8',(err,data)=>{
+        if(err){
+            return res.status(500).send('Error getting the data');
+        }
+        const tasks = JSON.parse(data || '[]');
+       const taskIndex= tasks.findIndex(task => task.id === Number(id));
+        if(taskIndex === -1){
+            return res.status(404).send('No task found with id: ',id);
+        }// Use splice not pop..... pop - Deletes the last element of the array
+        const deletedTask = tasks.splice(taskIndex, 1);
+        console.log('The Updated tasks list is : ',tasks);
+        fs.writeFile('data/tasks.txt',JSON.stringify(tasks,null,2),(err)=>{
+            if(err){
+                res.status(500).send('Error in updating the tasks');
+            }
+            res.status(201).json(deletedTask);
+        })
+    })
+};
