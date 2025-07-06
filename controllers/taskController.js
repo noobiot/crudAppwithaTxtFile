@@ -17,10 +17,10 @@ export const getTaskById = (req,res)=>{
         console.log(tasks);
         const taskFoundwithSameId =  tasks.find(task => task.id === Number(id));
         console.log(taskFoundwithSameId);
-        res.json(taskFoundwithSameId);
         if(!taskFoundwithSameId){
             res.status(404).send(`No task found with ${id}`);
         }
+        res.json(taskFoundwithSameId);
     })
 };
 export const createTask = (req,res)=>{
@@ -77,7 +77,7 @@ export const updateTaskById = (req,res)=>{
             if(err){
                 res.status(500).send('Error in updating the tasks');
             }
-            res.status(201).json(tasks);
+            res.status(200).json(tasks);
         })
     })
 };
@@ -100,7 +100,7 @@ export const deleteTaskById = (req,res)=>{
             if(err){
                 res.status(500).send('Error in updating the tasks');
             }
-            res.status(201).json(deletedTask);
+            res.status(200).json(deletedTask);
         })
     })
 };
